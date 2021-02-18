@@ -30,7 +30,7 @@ function updateTable() {
                 +json_result[i].birthday
                 +`</td></tr>`);
             }
-            console.log("Done");
+        console.log("Done");
         }
     );
 }
