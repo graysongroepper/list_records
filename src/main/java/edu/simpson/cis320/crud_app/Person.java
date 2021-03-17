@@ -2,12 +2,12 @@ package edu.simpson.cis320.crud_app;
 
 public class Person {
 
-    private int id;
-    private String first;
-    private String last;
-    private String email;
-    private String phone;
-    private String birthday;
+    public int id;
+    public String first;
+    public String last;
+    public String email;
+    public String phone;
+    public String birthday;
 
     public int getId() {return id; }
     public void setId(int id) { this.id = id; }

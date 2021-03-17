@@ -113,6 +113,8 @@ saveChangesButton.on("click", saveChanges);
 function saveChanges() {
     console.log("Save Changes");
 
+    let isValid = true;
+
     let firstName = $('#firstName').val();
     console.log("First name: " + firstName);
 
@@ -140,6 +142,7 @@ function saveChanges() {
         $('#firstName').addClass("is-valid");
     } else {
         // This is an INVALID field
+        isValid = false;
         $('#firstName').removeClass("is-valid");
         $('#firstName').addClass("is-invalid");
 
@@ -151,6 +154,7 @@ function saveChanges() {
         $('#lastName').removeClass("is-invalid");
         $('#lastName').addClass("is-valid");
     } else {
+        isValid = false;
         // This is an INVALID field
         $('#lastName').removeClass("is-valid");
         $('#lastName').addClass("is-invalid");
@@ -163,6 +167,7 @@ function saveChanges() {
         $('#email').addClass("is-valid");
     } else {
         // This is an INVALID field
+        isValid = false;
         $('#email').removeClass("is-valid");
         $('#email').addClass("is-invalid");
     }
@@ -174,6 +179,7 @@ function saveChanges() {
         $('#phone').addClass("is-valid");
     } else {
         // This is an INVALID field
+        isValid = false;
         $('#phone').removeClass("is-valid");
         $('#phone').addClass("is-invalid");
     }
@@ -185,8 +191,37 @@ function saveChanges() {
         $('#birthday').addClass("is-valid");
     } else {
         // This is an INVALID field
+        isValid = false;
         $('#birthday').removeClass("is-valid");
         $('#birthday').addClass("is-invalid");
+    }
+    if (isValid) {
+        console.log("Valid form");
+        // Code to submit your form will go here.
+        let my_data = {first: firstName, last: lastName,
+        email: email, phone: phone, birthday: birthday};
+
+        console.log(my_data);
+
+        let url = "api/name_list_edit";
+        let myFieldValue = $("#jqueryPostJSONField").val();
+        let dataToServer = {first: firstName, last: lastName,
+            email: email, phone: phone, birthday: birthday};
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: JSON.stringify(dataToServer),
+            success: function(dataFromServer) {
+                //update table, window reload, close window
+                updateTable();
+                window.location.reload();
+                console.log(dataFromServer);
+                close.window();
+            },
+            contentType: "application/json",
+            dataType: 'text' // Could be JSON or whatever too
+        });
     }
 
 }
