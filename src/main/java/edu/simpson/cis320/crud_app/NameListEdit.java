@@ -1,7 +1,4 @@
-/*
-Show how to handle posts of JSON data
-Method 6
- */
+
 
 package edu.simpson.cis320.crud_app;
 
@@ -14,9 +11,25 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @WebServlet(name = "NameListEdit", value = "/api/name_list_edit")
 public class NameListEdit extends HttpServlet {
+
+    private Pattern nameValidationPattern;
+    private Pattern emailValidationPattern;
+    private Pattern phoneValidationPattern;
+    private Pattern birthdayValidationPattern;
+
+    public NameListEdit() {
+
+        nameValidationPattern = Pattern.compile("^[A-Za-z]{1,10}$");
+        emailValidationPattern = Pattern.compile("^([A-Za-z0-9]{1,20})@([A-Za-z]{1,20})\\.([A-Za-z]{1,20})$");
+        phoneValidationPattern = Pattern.compile("^[0-9]{1,10}$");
+        birthdayValidationPattern = Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})$");
+    }
+
     private final static Logger log = Logger.getLogger(NameListEdit.class.getName());
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -48,15 +61,39 @@ public class NameListEdit extends HttpServlet {
         log.log(Level.INFO, "Phone: "+person.phone);
         log.log(Level.INFO, "Birthday: "+person.birthday);
 
-        // Send something back to the client. Really, we should send a JSON, but
-        // we'll keep things simple.
-        out.println("First Name: "+person.first);
-        out.println("Last Name: "+person.last);
-        out.println("Email: "+person.email);
-        out.println("Phone: "+person.phone);
-        out.println("Birthday: "+person.birthday);
+
+        Matcher first = nameValidationPattern.matcher(person.getFirst());
+        if (!first.find()){
+            out.println("{\"error\" : \"Error validating first name.\"}");
+            return;
+        }
+
+        Matcher last = nameValidationPattern.matcher(person.getLast());
+        if (!last.find()){
+            out.println("{\"error\" : \"Error validating first name.\"}");
+            return;
+        }
+
+        Matcher email = emailValidationPattern.matcher(person.getEmail());
+        if (!email.find()){
+            out.println("{\"error\" : \"Error validating first name.\"}");
+            return;
+        }
+
+        Matcher phone = phoneValidationPattern.matcher(person.getPhone());
+        if (!phone.find()){
+            out.println("{\"error\" : \"Error validating first name.\"}");
+            return;
+        }
+
+        Matcher birthday = birthdayValidationPattern.matcher(person.getBirthday());
+        if (!birthday.find()){
+            out.println("{\"error\" : \"Error validating first name.\"}");
+            return;
+        }
 
         PersonDAO.addPerson(person);
+        out.println("{\"Success\" : \"Person inserted\"}");
 
     }
 

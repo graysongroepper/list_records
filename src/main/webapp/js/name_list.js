@@ -51,16 +51,42 @@ function updateTable() {
                     +json_result[i].phone
                     +'</td><td>'
                     +json_result[i].birthday
-                    +`</td></tr>`);
+                    +'</td><td>'
+                    +"<button type='button' name='delete' class='deleteButton btn btn-danger' value='"+json_result[i].id+"'>"
+                    +"Delete"
+                    +"</button>"
+                    +'</td></tr>');
             }
-        console.log("Done");
+            console.log("Done");
+
+            let buttons = $(".deleteButton");
+            buttons.on("click", deleteItem);
         }
     );
 }
 // Call your code.
 updateTable();
 
+function deleteItem(e) {
+    console.log("Delete");
+    console.log(e.target.value);
 
+    let url = "api/name_list_delete";
+    let dataToServer = {id: e.target.value};
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(dataToServer),
+        success: function(dataFromServer) {
+                //update table, window reload, close window
+                updateTable();
+                console.log(dataFromServer);
+        },
+        contentType: "application/json",
+        dataType: 'text' // Could be JSON or whatever too
+    });
+}
 // Called when "Add Item" button is clicked
 function showDialogAdd() {
 
@@ -132,7 +158,7 @@ function saveChanges() {
 
     let reg = /^[A-Za-z]{1,10}$/;
     let emailReg = /^([A-Za-z0-9]{1,20})@([A-Za-z]{1,20})\.([A-Za-z]{1,20})$/
-    let phoneReg = /^[0-9]{1,10}$/;
+    let phoneReg = /^[0-9]{10}$/;
     let birthdayReg = /^(\d{4})-(\d{2})-(\d{2})$/
 
     if (reg.test(firstName)) {
@@ -195,6 +221,7 @@ function saveChanges() {
         $('#birthday').removeClass("is-valid");
         $('#birthday').addClass("is-invalid");
     }
+
     if (isValid) {
         console.log("Valid form");
         // Code to submit your form will go here.
@@ -204,7 +231,6 @@ function saveChanges() {
         console.log(my_data);
 
         let url = "api/name_list_edit";
-        let myFieldValue = $("#jqueryPostJSONField").val();
         let dataToServer = {first: firstName, last: lastName,
             email: email, phone: phone, birthday: birthday};
 
@@ -213,11 +239,16 @@ function saveChanges() {
             url: url,
             data: JSON.stringify(dataToServer),
             success: function(dataFromServer) {
-                //update table, window reload, close window
-                updateTable();
-                window.location.reload();
-                console.log(dataFromServer);
-                close.window();
+                let result = JSON.parse(dataFromServer)
+
+                if ('error' in result){
+                    alert(result.error);
+                } else {
+                    //update table, window reload, close window
+                    updateTable();
+                    console.log(dataFromServer);
+                    $('#myModal').modal('hide');
+                }
             },
             contentType: "application/json",
             dataType: 'text' // Could be JSON or whatever too
@@ -225,3 +256,6 @@ function saveChanges() {
     }
 
 }
+
+
+
