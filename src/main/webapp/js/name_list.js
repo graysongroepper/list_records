@@ -271,8 +271,6 @@ function saveChanges() {
         console.log("Valid form");
         // Code to submit your form will go here.
 
-        if (id === 0) {
-
             let my_data = {
                 first: firstName, last: lastName,
                 email: email, phone: phone, birthday: birthday
@@ -283,48 +281,15 @@ function saveChanges() {
             let url = "api/name_list_edit";
 
 
-            let dataToServer = {
-                first: firstName, last: lastName,
-                email: email, phone: phone, birthday: birthday
-            };
+            let dataToServer = {};
 
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: JSON.stringify(dataToServer),
-                success: function (dataFromServer) {
-                    let result = JSON.parse(dataFromServer)
-                    if ('error' in result) {
-                        alert(result.error);
-                    } else {
-                        //update table, window reload, close window
-                        updateTable();
-                        console.log(dataFromServer);
-                        $('#myModal').modal('hide');
-                    }
-                },
-                contentType: "application/json",
-                dataType: 'text' // Could be JSON or whatever too
-            });
-
-        } else {
-
-            let my_data = {
-                id: id, first: firstName, last: lastName,
-                email: email, phone: phone, birthday: birthday
-            };
-
-            console.log(my_data);
-
-            let url = "api/name_list_edit";
-
-
-            let dataToServer = {
-                id: id, first: firstName, last: lastName,
-                email: email, phone: phone, birthday: birthday
-            };
-
+            if (id === ""){
+                dataToServer = {first: firstName, last: lastName,
+                    email: email, phone: phone, birthday: birthday};
+            } else{
+                dataToServer = {id: id,first: firstName, last: lastName,
+                    email: email, phone: phone, birthday: birthday};
+            }
 
             $.ajax({
                 type: 'POST',
@@ -346,7 +311,6 @@ function saveChanges() {
             });
 
         }
-    }
 }
 
 
