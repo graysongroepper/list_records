@@ -91,10 +91,16 @@ public class NameListEdit extends HttpServlet {
             out.println("{\"error\" : \"Error validating first name.\"}");
             return;
         }
+        if (person.getId() != 0){
+            log.log(Level.INFO,"Got an ID");
+            PersonDAO.editPerson(person);
+            out.println("{\"Success\" : \"Person Edited\"}");
 
-        PersonDAO.addPerson(person);
-        out.println("{\"Success\" : \"Person inserted\"}");
-
+        }else {
+            PersonDAO.addPerson(person);
+            log.log(Level.INFO, "Did not get an ID");
+            out.println("{\"Success\" : \"Person inserted\"}");
+        }
     }
 
 }

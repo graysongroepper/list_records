@@ -52,6 +52,10 @@ function updateTable() {
                     +'</td><td>'
                     +json_result[i].birthday
                     +'</td><td>'
+                    +"<button type='button' name='edit' class='editButton btn btn-primary' value='"+json_result[i].id+"'>"
+                    +"Edit"
+                    +"</button>"
+                    +'</td><td>'
                     +"<button type='button' name='delete' class='deleteButton btn btn-danger' value='"+json_result[i].id+"'>"
                     +"Delete"
                     +"</button>"
@@ -61,6 +65,9 @@ function updateTable() {
 
             let buttons = $(".deleteButton");
             buttons.on("click", deleteItem);
+
+            let editButtons = $(".editButton");
+            editButtons.on("click", editItem);
         }
     );
 }
@@ -86,6 +93,42 @@ function deleteItem(e) {
         contentType: "application/json",
         dataType: 'text' // Could be JSON or whatever too
     });
+}
+
+function editItem(e) {
+    console.log("Edit");
+    console.log("Edit: " + e.target.value);
+
+    // Grab the id from the event
+    let id = e.target.value;
+
+// This next line is fun.
+// "e" is the event of the mouse click
+// "e.target" is what the user clicked on. The button in this case.
+// "e.target.parentNode" is the node that holds the button. In this case, the table cell.
+// "e.target.parentNode.parentNode" is the parent of the table cell. In this case, the table row.
+// "e.target.parentNode.parentNode.querySelectorAll("td")" gets an array of all matching table cells in the row
+// "e.target.parentNode.parentNode.querySelectorAll("td")[0]" is the first cell. (You can grab cells 0, 1, 2, etc.)
+// "e.target.parentNode.parentNode.querySelectorAll("td")[0].innerHTML" is content of that cell. Like "Sam" for example.
+// How did I find this long chain? Just by setting a breakpoint and using the interactive shell in my browser.
+    let first = e.target.parentNode.parentNode.querySelectorAll("td")[1].innerHTML;
+    let last = e.target.parentNode.parentNode.querySelectorAll("td")[2].innerHTML;
+    let email = e.target.parentNode.parentNode.querySelectorAll("td")[3].innerHTML;
+    let phone = e.target.parentNode.parentNode.querySelectorAll("td")[4].innerHTML;
+    let birthday = e.target.parentNode.parentNode.querySelectorAll("td")[5].innerHTML;
+
+// repeat line above for all the fields we need
+
+    $('#id').val(id); // Yes, now we set and use the hidden ID field
+    $('#firstName').val(first);
+    $('#lastName').val(last);
+    $('#email').val(email);
+    $('#phone').val(phone);
+    $('#birthday').val(birthday);
+
+// Etc
+// Show the window
+    $('#myModal').modal('show');
 }
 // Called when "Add Item" button is clicked
 function showDialogAdd() {
@@ -140,6 +183,8 @@ function saveChanges() {
     console.log("Save Changes");
 
     let isValid = true;
+
+    let id = $('#id').val();
 
     let firstName = $('#firstName').val();
     console.log("First name: " + firstName);
@@ -225,36 +270,83 @@ function saveChanges() {
     if (isValid) {
         console.log("Valid form");
         // Code to submit your form will go here.
-        let my_data = {first: firstName, last: lastName,
-        email: email, phone: phone, birthday: birthday};
 
-        console.log(my_data);
+        if (id === 0) {
 
-        let url = "api/name_list_edit";
-        let dataToServer = {first: firstName, last: lastName,
-            email: email, phone: phone, birthday: birthday};
+            let my_data = {
+                first: firstName, last: lastName,
+                email: email, phone: phone, birthday: birthday
+            };
 
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: JSON.stringify(dataToServer),
-            success: function(dataFromServer) {
-                let result = JSON.parse(dataFromServer)
+            console.log(my_data);
 
-                if ('error' in result){
-                    alert(result.error);
-                } else {
-                    //update table, window reload, close window
-                    updateTable();
-                    console.log(dataFromServer);
-                    $('#myModal').modal('hide');
-                }
-            },
-            contentType: "application/json",
-            dataType: 'text' // Could be JSON or whatever too
-        });
+            let url = "api/name_list_edit";
+
+
+            let dataToServer = {
+                first: firstName, last: lastName,
+                email: email, phone: phone, birthday: birthday
+            };
+
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: JSON.stringify(dataToServer),
+                success: function (dataFromServer) {
+                    let result = JSON.parse(dataFromServer)
+                    if ('error' in result) {
+                        alert(result.error);
+                    } else {
+                        //update table, window reload, close window
+                        updateTable();
+                        console.log(dataFromServer);
+                        $('#myModal').modal('hide');
+                    }
+                },
+                contentType: "application/json",
+                dataType: 'text' // Could be JSON or whatever too
+            });
+
+        } else {
+
+            let my_data = {
+                id: id, first: firstName, last: lastName,
+                email: email, phone: phone, birthday: birthday
+            };
+
+            console.log(my_data);
+
+            let url = "api/name_list_edit";
+
+
+            let dataToServer = {
+                id: id, first: firstName, last: lastName,
+                email: email, phone: phone, birthday: birthday
+            };
+
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: JSON.stringify(dataToServer),
+                success: function (dataFromServer) {
+                    let result = JSON.parse(dataFromServer)
+                    if ('error' in result) {
+                        alert(result.error);
+                    } else {
+                        //update table, window reload, close window
+                        updateTable();
+                        console.log(dataFromServer);
+                        $('#myModal').modal('hide');
+                    }
+                },
+                contentType: "application/json",
+                dataType: 'text' // Could be JSON or whatever too
+            });
+
+        }
     }
-
 }
 
 
