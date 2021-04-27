@@ -41,7 +41,7 @@ function getLogin() {
 }
 
 // This method calls the servlet that invalidates our session
-function invalidateSessionButton() {
+function logout() {
 
     let url = "api/logout_servlet";
 
@@ -59,7 +59,7 @@ button.on("click", login);
 button = $('#getLogin');
 button.on("click", getLogin);
 
-button = $('#invalidateSession');
-button.on("click", invalidateSessionButton);
+button = $('#logout');
+button.on("click", logout);
 
 getLogin();
